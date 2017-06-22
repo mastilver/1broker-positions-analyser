@@ -1,0 +1,32 @@
+{
+  "name": "1broker-positions-analyser",
+  "version": "0.0.0",
+  "description": "1broker positions analyser",
+  "license": "MIT",
+  "repository": "mastilver/1broker-positions-analyser",
+  "author": {
+    "name": "Thomas Sileghem",
+    "email": "th.sileghem@gmail.com",
+    "url": "mastilver.com"
+  },
+  "bin": "cli.js",
+  "engines": {
+    "node": ">=4"
+  },
+  "scripts": {
+    "test": "xo"
+  },
+  "files": [
+    "cli.js"
+  ],
+  "keywords": [
+    ""
+  ],
+  "dependencies": {
+    "csv-parse": "^1.2.0",
+    "meow": "^3.7.0"
+  },
+  "devDependencies": {
+    "xo": "^0.18.2"
+  }
+}
