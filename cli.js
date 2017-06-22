@@ -5,6 +5,7 @@ const fs = require('fs');
 
 const meow = require('meow');
 const csvParser = require('csv-parse');
+const leftPad = require('left-pad');
 
 const cli = meow(`
 	Usage
@@ -19,7 +20,7 @@ fs.createReadStream(cli.input[0])
 }))
 .on('data', ({'Exit Date': date, 'Profit/Loss': profit}) => {
 	date = new Date(date);
-	const key = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+	const key = `${date.getFullYear()}-${leftPad(date.getMonth() + 1, 2, '0')}-${leftPad(date.getDate(), 2, '0')}`;
 
 	if (!(key in result)) {
 		result[key] = 0;
