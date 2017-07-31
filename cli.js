@@ -5,7 +5,7 @@ const fs = require('fs');
 
 const meow = require('meow');
 const csvParser = require('csv-parse');
-const leftPad = require('left-pad');
+const moment = require('moment');
 
 const cli = meow(`
 	Usage
@@ -56,15 +56,8 @@ fs.createReadStream(cli.input[0])
 
 function getKeyGenerator(type) {
 	return ({
-		day: d => `${d.getFullYear()}-${leftPad(d.getMonth() + 1, 2, '0')}-${leftPad(d.getDate(), 2, '0')}`,
-		week: d => `${d.getFullYear()}-${leftPad(getWeek(d), 2, '0')}`,
-		month: d => `${d.getFullYear()}-${leftPad(d.getMonth() + 1, 2, '0')}`
+		day: d => moment(d).format('YYYY-MM-DD'),
+		week: d => moment(d).format('YYYY-[W]WW'),
+		month: d => moment(d).format('YYYY-MM')
 	})[type];
-}
-
-function getWeek(date) {
-	const firstWeekStart = new Date(date.getFullYear(), 0, 1);
-	firstWeekStart.setDate(firstWeekStart.getDay() - 6);
-
-	return Math.ceil((date.getTime() - firstWeekStart.getTime()) / (7 * 24 * 3600 * 1000));
 }
