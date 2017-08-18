@@ -15,6 +15,7 @@ const cli = meow(`
 	  --day    Display results day by day
 	  --week   Display results week by week
 	  --month  Display results month by month
+	  --spread Spread earning and loses across the days a position is open
 
 	Examples
 	  $ 1broker-positions-analyser ~/Downloads/position_history_2017-01-01_2017-07-23.csv --month
@@ -30,23 +31,46 @@ const getKey = getKeyGenerator(
 	['day', 'week', 'month'].find(x => cli.flags[x]) || 'day'
 );
 
-const result = {};
+const profitPerDay = {};
 
 fs.createReadStream(cli.input[0])
 .pipe(csvParser({
 	columns: true
 }))
-.on('data', ({'Exit Date': date, 'Profit/Loss': profit}) => {
-	date = new Date(date);
-	const key = getKey(date);
+.on('data', ({'Entry Date': startDate, 'Exit Date': endDate, 'Profit/Loss': profit}) => {
+	endDate = new Date(endDate);
+	endDate.setHours(24, 0, 0, 0);
 
-	if (!(key in result)) {
-		result[key] = 0;
+	startDate = new Date(startDate);
+	startDate.setHours(0, 0, 0, 0);
+
+	if (cli.flags.spread) {
+		const nbDays = ((endDate - startDate) / 1000 / 3600 / 24);
+
+		profit /= nbDays;
+
+		for (let i = 0; i < nbDays; i++) {
+			addProfit(new Date(startDate.getTime() + (i * 24 * 3600 * 1000)), profit);
+		}
+	} else {
+		addProfit(endDate, profit);
 	}
-
-	result[key] += parseFloat(profit, 10);
 })
 .on('end', () => {
+	const result = {};
+
+	Object.keys(profitPerDay)
+	.sort()
+	.forEach(date => {
+		const key = getKey(date);
+
+		if (!(key in result)) {
+			result[key] = 0;
+		}
+
+		result[key] += profitPerDay[date];
+	});
+
 	Object.keys(result)
 	.sort()
 	.forEach(date => {
@@ -60,4 +84,14 @@ function getKeyGenerator(type) {
 		week: d => moment(d).format('YYYY-[W]WW'),
 		month: d => moment(d).format('YYYY-MM')
 	})[type];
+}
+
+function addProfit(date, profit) {
+	const key = moment(date).format('YYYY-MM-DD');
+
+	if (!(key in profitPerDay)) {
+		profitPerDay[key] = 0;
+	}
+
+	profitPerDay[key] += parseFloat(profit, 10);
 }
