@@ -20,6 +20,7 @@ Options
   --day    Display results day by day
   --week   Display results week by week
   --month  Display results month by month
+  --year   Display results year by year
   --spread Spread earning and loses across the days a position is open
 
 Examples

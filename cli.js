@@ -15,6 +15,7 @@ const cli = meow(`
 	  --day    Display results day by day
 	  --week   Display results week by week
 	  --month  Display results month by month
+	  --year   Display results year by year
 	  --spread Spread earning and loses across the days a position is open
 
 	Examples
@@ -28,7 +29,7 @@ if (cli.flags.help) {
 }
 
 const getKey = getKeyGenerator(
-	['day', 'week', 'month'].find(x => cli.flags[x]) || 'day'
+	['day', 'week', 'month', 'year'].find(x => cli.flags[x]) || 'day'
 );
 
 const profitPerDay = {};
@@ -82,7 +83,8 @@ function getKeyGenerator(type) {
 	return ({
 		day: d => moment(d).format('YYYY-MM-DD'),
 		week: d => moment(d).format('YYYY-[W]WW'),
-		month: d => moment(d).format('YYYY-MM')
+		month: d => moment(d).format('YYYY-MM'),
+		year: d => moment(d).format('YYYY')
 	})[type];
 }
 
