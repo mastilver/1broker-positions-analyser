@@ -40,12 +40,14 @@ fs.createReadStream(cli.input[0])
 }))
 .on('data', ({'Entry Date': startDate, 'Exit Date': endDate, 'Profit/Loss': profit}) => {
 	endDate = new Date(endDate);
-	endDate.setHours(24, 0, 0, 0);
-
-	startDate = new Date(startDate);
-	startDate.setHours(0, 0, 0, 0);
+	endDate.setHours(0, 0, 0, 0);
 
 	if (cli.flags.spread) {
+		endDate.setHours(24, 0, 0, 0);
+
+		startDate = new Date(startDate);
+		startDate.setHours(0, 0, 0, 0);
+
 		const nbDays = ((endDate - startDate) / 1000 / 3600 / 24);
 
 		profit /= nbDays;
